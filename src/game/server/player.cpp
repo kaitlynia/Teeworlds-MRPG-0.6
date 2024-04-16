@@ -516,7 +516,8 @@ void CPlayer::AddExp(int Exp)
 	while(Acc().m_Exp >= ExpNeed(Acc().m_Level))
 	{
 		Acc().m_Exp -= ExpNeed(Acc().m_Level), Acc().m_Level++;
-		Acc().m_Upgrade += 1;
+		// more upgrade points per level every 10 levels
+		Acc().m_Upgrade += Acc().m_Level / 10 + 1;
 
 		if(m_pCharacter)
 		{
@@ -575,12 +576,14 @@ int CPlayer::ExpNeed(int Level)
 
 int CPlayer::GetStartHealth()
 {
-	return 10 + GetAttributeSize(AttributeIdentifier::HP);
+	// 5x integer stats
+	return 10 + GetAttributeSize(AttributeIdentifier::HP) * 5;
 }
 
 int CPlayer::GetStartMana()
 {
-	return 10 + GetAttributeSize(AttributeIdentifier::MP);
+	// 5x integer stats
+	return 10 + GetAttributeSize(AttributeIdentifier::MP) * 5;
 }
 
 int64_t CPlayer::GetAfkTime() const
@@ -609,7 +612,7 @@ void CPlayer::FormatBroadcastBasicStats(char *pBuffer, int Size, const char* pAp
 	}
 
 	str_format_progress_bar(aBufProgressBarExp, sizeof(aBufProgressBarExp), 100, LevelPercent, 10, ':', ' ');
-	str_format(pBuffer, Size, "\n\n\n\n\nLv%d%s\nHP %d/%d\nMP %d/%d\nGold %s\n%s\n\n\n\n\n\n\n\n\n\n\n%s", 
+	str_format(pBuffer, Size, "\n\n\n\n\nLv%d%s\nHP %d/%d\nMP %d/%d\nGold %s\n%s\n\n\n\n\n\n\n\n\n\n\n%s",
 		Acc().m_Level, aBufProgressBarExp, Health, MaximumHealth, Mana, MaximumMana, get_commas<int>(Gold).c_str(), aRecastInfo, pAppendStr);
 	for(int space = 150, c = str_length(pBuffer); c < Size && space; c++, space--)
 		pBuffer[c] = ' ';
@@ -686,7 +689,7 @@ bool CPlayer::ParseVoteUpgrades(const char *CMD, const int VoteID, const int Vot
 		}
 		return true;
 	}
-	
+
 	if(PPSTR(CMD, "BACK") == 0)
 	{
 		// close other tabs after checked new
@@ -738,7 +741,7 @@ CPlayerItem* CPlayer::GetItem(ItemIdentifier ID)
 CSkill* CPlayer::GetSkill(SkillIdentifier ID)
 {
 	dbg_assert(CSkillDescription::Data().find(ID) != CSkillDescription::Data().end(), "invalid referring to the CSkillData");
-	
+
 	if(CSkill::Data()[m_ClientID].find(ID) == CSkill::Data()[m_ClientID].end())
 	{
 		CSkill(ID, m_ClientID).Init({},{});
@@ -759,7 +762,7 @@ int CPlayer::GetEquippedItemID(ItemFunctional EquipID, int SkipItemID) const
 {
 	const auto Iter = std::find_if(CPlayerItem::Data()[m_ClientID].begin(), CPlayerItem::Data()[m_ClientID].end(), [EquipID, SkipItemID](const auto& p)
 	{
-		return (p.second.HasItem() && p.second.IsEquipped() && p.second.Info()->IsFunctional(EquipID) && p.first != SkipItemID); 
+		return (p.second.HasItem() && p.second.IsEquipped() && p.second.Info()->IsFunctional(EquipID) && p.first != SkipItemID);
 	});
 	return Iter != CPlayerItem::Data()[m_ClientID].end() ? Iter->first : -1;
 }
@@ -796,12 +799,13 @@ float CPlayer::GetAttributePercent(AttributeIdentifier ID)
 	float Percent = 0.0f;
 	int Size = GetAttributeSize(ID);
 
+	// 66x percent stats
 	if(ID == AttributeIdentifier::Vampirism)
-		Percent = min(8.0f + (float)Size * 0.0015f, 30.0f);
+		Percent = min(8.0f + (float)Size * 0.1f, 30.0f);
 	if(ID == AttributeIdentifier::Crit)
-		Percent = min(8.0f + (float)Size * 0.0015f, 30.0f);
+		Percent = min(8.0f + (float)Size * 0.1f, 30.0f);
 	if(ID == AttributeIdentifier::Lucky)
-		Percent = min(5.0f + (float)Size * 0.0015f, 20.0f);
+		Percent = min(5.0f + (float)Size * 0.1f, 20.0f);
 	return Percent;
 }
 

@@ -81,7 +81,8 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 		GS()->Mmo()->Quest()->UpdateArrowStep(m_pPlayer);
 		GS()->Mmo()->Quest()->AcceptNextStoryQuestStep(m_pPlayer);
 
-		m_AmmoRegen = m_pPlayer->GetAttributeSize(AttributeIdentifier::AmmoRegen);
+		// 5x integer stats
+		m_AmmoRegen = m_pPlayer->GetAttributeSize(AttributeIdentifier::AmmoRegen) * 5;
 		GS()->UpdateVotes(m_pPlayer->GetCID(), m_pPlayer->m_OpenVoteMenu);
 		m_pPlayer->ShowInformationStats();
 	}
@@ -235,17 +236,17 @@ void CCharacter::FireWeapon()
 		return;
 
 	DoWeaponSwitch();
-	
+
 	// check if we gonna auto fire
 	bool FullAuto = false;
 	if(m_pPlayer->GetSkill(SkillMasterWeapon)->IsLearned())
 		FullAuto = true;
-	
+
 	// check if we gonna fire
 	bool WillFire = false;
 	if(CountInput(m_LatestPrevInput.m_Fire, m_LatestInput.m_Fire).m_Presses)
 		WillFire = true;
-	
+
 	if(FullAuto && (m_LatestInput.m_Fire&1) && m_Core.m_aWeapons[m_Core.m_ActiveWeapon].m_Ammo)
 		WillFire = true;
 
@@ -342,7 +343,8 @@ void CCharacter::FireWeapon()
 		case WEAPON_SHOTGUN:
 		{
 			const bool IsExplosive = m_pPlayer->GetItem(itExplosiveShotgun)->IsEquipped();
-			const int ShotSpread = min(2 + m_pPlayer->GetAttributeSize(AttributeIdentifier::SpreadShotgun), 36);
+			// 5x integer stats
+			const int ShotSpread = min(2 + m_pPlayer->GetAttributeSize(AttributeIdentifier::SpreadShotgun) * 5, 36);
 			CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
 			Msg.AddInt(ShotSpread);
 			for (int i = 1; i <= ShotSpread; ++i)
@@ -361,7 +363,8 @@ void CCharacter::FireWeapon()
 
 		case WEAPON_GRENADE:
 		{
-			const int ShotSpread = min(1 + m_pPlayer->GetAttributeSize(AttributeIdentifier::SpreadGrenade), 21);
+			// 5x integer stats
+			const int ShotSpread = min(1 + m_pPlayer->GetAttributeSize(AttributeIdentifier::SpreadGrenade) * 5, 21);
 			CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
 			Msg.AddInt(ShotSpread);
 			for (int i = 1; i < ShotSpread; ++i)
@@ -379,7 +382,8 @@ void CCharacter::FireWeapon()
 
 		case WEAPON_LASER:
 		{
-			const int ShotSpread = min(1 + m_pPlayer->GetAttributeSize(AttributeIdentifier::SpreadRifle), 36);
+			// 5x integer stats
+			const int ShotSpread = min(1 + m_pPlayer->GetAttributeSize(AttributeIdentifier::SpreadRifle) * 5, 36);
 			for (int i = 1; i < ShotSpread; ++i)
 			{
 				const float Spreading = ((0.0058945f*(9.0f*ShotSpread)/2)) - (0.0058945f*(9.0f*i));
@@ -399,7 +403,8 @@ void CCharacter::FireWeapon()
 
 	if(!m_ReloadTimer)
 	{
-		const int ReloadArt = m_pPlayer->GetAttributeSize(AttributeIdentifier::AttackSPD);
+		// 5x integer stats
+		const int ReloadArt = m_pPlayer->GetAttributeSize(AttributeIdentifier::AttackSPD) * 5;
 		m_ReloadTimer = g_pData->m_Weapons.m_aId[m_Core.m_ActiveWeapon].m_Firedelay * Server()->TickSpeed() / (1000 + ReloadArt);
 	}
 }
@@ -422,7 +427,8 @@ void CCharacter::HandleWeapons()
 
 		if (m_Core.m_aWeapons[m_Core.m_ActiveWeapon].m_AmmoRegenStart <= Server()->Tick())
 		{
-			const int RealAmmo = 10 + m_pPlayer->GetAttributeSize(AttributeIdentifier::Ammo);
+			// 5x integer stats
+			const int RealAmmo = 10 + m_pPlayer->GetAttributeSize(AttributeIdentifier::Ammo) * 5;
 			m_Core.m_aWeapons[m_Core.m_ActiveWeapon].m_Ammo = min(m_Core.m_aWeapons[m_Core.m_ActiveWeapon].m_Ammo + 1, RealAmmo);
 			m_Core.m_aWeapons[m_Core.m_ActiveWeapon].m_AmmoRegenStart = -1;
 		}
@@ -479,7 +485,8 @@ bool CCharacter::GiveWeapon(int Weapon, int Ammo)
 		return false;
 	}
 
-	const int MaximumAmmo = 10 + m_pPlayer->GetAttributeSize(AttributeIdentifier::Ammo);
+	// 5x integer stats
+	const int MaximumAmmo = 10 + m_pPlayer->GetAttributeSize(AttributeIdentifier::Ammo) * 5;
 	if(m_Core.m_aWeapons[WeaponID].m_Ammo >= MaximumAmmo)
 		return false;
 
@@ -671,7 +678,7 @@ void CCharacter::TickDeferred()
 		mem_zero(&Current, sizeof(Current));
 		m_ReckoningCore.Write(&Predicted);
 		m_Core.Write(&Current);
-		
+
 		// only allow dead reackoning for a top of 3 seconds
 		if(m_ReckoningTick + Server()->TickSpeed() * 3 < Server()->Tick() || mem_comp(&Predicted, &Current, sizeof(CNetObj_Character)) != 0)
 		{
@@ -796,11 +803,12 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int FromCID, int Weapon)
 		// critical damage
 		if(Dmg && !pFrom->IsBot() && m_pPlayer->GetAttributePercent(AttributeIdentifier::Crit) > frandom() * 100.0f)
 		{
-			CritDamage = 100 + max(pFrom->GetAttributeSize(AttributeIdentifier::CritDMG), 1);
+			// 5x integer stats
+			CritDamage = 100 + max(pFrom->GetAttributeSize(AttributeIdentifier::CritDMG) * 5, 1);
 			const float CritDamageFormula = (float)Dmg + ((float)CritDamage * ((float)Dmg / 100.0f));
 			const float CritRange = (CritDamageFormula + (CritDamageFormula / 2.0f) / 2.0f);
 			Dmg = (int)CritDamageFormula + random_int()%(int)CritRange;
-			
+
 			pFrom->GetCharacter()->SetEmote(EMOTE_ANGRY, 2, true);
 		}
 
@@ -919,7 +927,8 @@ void CCharacter::Snap(int SnappingClient)
 
 		if(m_Core.m_aWeapons[m_Core.m_ActiveWeapon].m_Ammo > 0)
 		{
-			const int MaximumAmmo = 10 + m_pPlayer->GetAttributeSize(AttributeIdentifier::Ammo);
+			// 5x integer stats
+			const int MaximumAmmo = 10 + m_pPlayer->GetAttributeSize(AttributeIdentifier::Ammo) * 5;
 			const int AmmoPercent =translate_to_percent(MaximumAmmo, m_Core.m_aWeapons[m_Core.m_ActiveWeapon].m_Ammo, 10.0f);
 			pCharacter->m_AmmoCount = clamp(AmmoPercent, 1, 10);
 		}
@@ -1202,7 +1211,8 @@ void CCharacter::UpdateEquipingStats(int ItemID)
 	}
 
 	if(pItemInfo->GetInfoEnchantStats(AttributeIdentifier::AmmoRegen) > 0)
-		m_AmmoRegen = m_pPlayer->GetAttributeSize(AttributeIdentifier::AmmoRegen);
+		// 5x integer stats
+		m_AmmoRegen = m_pPlayer->GetAttributeSize(AttributeIdentifier::AmmoRegen) * 5;
 }
 
 void CCharacter::HandlePlayer()

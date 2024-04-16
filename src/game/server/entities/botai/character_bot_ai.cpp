@@ -220,7 +220,8 @@ void CCharacterBotAI::RewardPlayer(CPlayer* pPlayer, vec2 Force) const
 		GS()->CreateDropBonuses(m_Core.m_Pos, 1, ExperienceDrop, (1 + random_int() % 2), Force);
 
 		// drop item's
-		const float ActiveLuckyDrop = clamp((float)pPlayer->GetAttributeSize(AttributeIdentifier::LuckyDropItem) / 100.0f, 0.01f, 10.0f);
+		// 5x integer stats
+		const float ActiveLuckyDrop = clamp((float)pPlayer->GetAttributeSize(AttributeIdentifier::LuckyDropItem) * 5 / 100.0f, 0.01f, 10.0f);
 		for(int i = 0; i < 5; i++)
 		{
 			CItem DropItem;
@@ -454,7 +455,7 @@ void CCharacterBotAI::EngineNPC()
 		const int RandomDirection = random_int() % 6;
 		if(RandomDirection == 0 || RandomDirection == 2)
 			m_Input.m_Direction = -1 + RandomDirection;
-		else 
+		else
 			m_Input.m_Direction = 0;
 	}
 }
@@ -686,7 +687,7 @@ void CCharacterBotAI::Move()
 	const bool IsGround = IsGrounded();
 	if((IsGround && WayDir.y < -0.5) || (!IsGround && WayDir.y < -0.5 && m_Core.m_Vel.y > 0))
 		m_Input.m_Jump = 1;
-	
+
 	if(GS()->Collision()->IntersectLineWithInvisible(m_Pos, m_Pos + vec2(m_Input.m_Direction, 0) * 150, &m_WallPos, nullptr))
 	{
 		if(IsGround && GS()->Collision()->IntersectLine(m_WallPos, m_WallPos + vec2(0, -1) * 210, nullptr, nullptr))
