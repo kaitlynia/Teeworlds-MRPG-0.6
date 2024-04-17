@@ -74,7 +74,7 @@ bool CAccountMinerManager::ShowGuideDropByWorld(int WorldID, CPlayer* pPlayer)
 {
 	bool Found = false;
 	const int ClientID = pPlayer->GetCID();
-	
+
 	for(const auto& [ID, Ore] : ms_aOre)
 	{
 		if (WorldID == Ore.m_WorldID)

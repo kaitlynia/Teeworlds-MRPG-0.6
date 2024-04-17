@@ -235,17 +235,17 @@ void CCharacter::FireWeapon()
 		return;
 
 	DoWeaponSwitch();
-	
+
 	// check if we gonna auto fire
 	bool FullAuto = false;
 	if(m_pPlayer->GetSkill(SkillMasterWeapon)->IsLearned())
 		FullAuto = true;
-	
+
 	// check if we gonna fire
 	bool WillFire = false;
 	if(CountInput(m_LatestPrevInput.m_Fire, m_LatestInput.m_Fire).m_Presses)
 		WillFire = true;
-	
+
 	if(FullAuto && (m_LatestInput.m_Fire&1) && m_Core.m_aWeapons[m_Core.m_ActiveWeapon].m_Ammo)
 		WillFire = true;
 
@@ -671,7 +671,7 @@ void CCharacter::TickDeferred()
 		mem_zero(&Current, sizeof(Current));
 		m_ReckoningCore.Write(&Predicted);
 		m_Core.Write(&Current);
-		
+
 		// only allow dead reackoning for a top of 3 seconds
 		if(m_ReckoningTick + Server()->TickSpeed() * 3 < Server()->Tick() || mem_comp(&Predicted, &Current, sizeof(CNetObj_Character)) != 0)
 		{
@@ -781,7 +781,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int FromCID, int Weapon)
 		if(m_pPlayer->GetAttributePercent(AttributeIdentifier::Vampirism) > frandom() * 100.0f)
 		{
 			const int Recovery = max(1, Dmg / 2);
-			GS()->Chat(FromCID, ":: Vampirism stolen: {INT}HP.", Recovery);
+			// GS()->Chat(FromCID, ":: Vampirism stolen: {INT}HP.", Recovery);
 			pFrom->GetCharacter()->IncreaseHealth(Recovery);
 			GS()->SendEmoticon(FromCID, EMOTICON_DROP);
 		}
@@ -800,7 +800,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int FromCID, int Weapon)
 			const float CritDamageFormula = (float)Dmg + ((float)CritDamage * ((float)Dmg / 100.0f));
 			const float CritRange = (CritDamageFormula + (CritDamageFormula / 2.0f) / 2.0f);
 			Dmg = (int)CritDamageFormula + random_int()%(int)CritRange;
-			
+
 			pFrom->GetCharacter()->SetEmote(EMOTE_ANGRY, 2, true);
 		}
 

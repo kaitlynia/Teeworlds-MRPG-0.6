@@ -30,13 +30,13 @@ bool CCraftManager::OnHandleTile(CCharacter* pChr, int IndexCollision)
 
 	if (pChr->GetHelper()->TileEnter(IndexCollision, TILE_CRAFT_ZONE))
 	{
-		GS()->Chat(ClientID, "You can see menu in the votes!");
+		GS()->Chat(ClientID, "You can see crafting menu in the votes!");
 		GS()->UpdateVotes(ClientID, pPlayer->m_OpenVoteMenu);
 		return true;
 	}
 	else if (pChr->GetHelper()->TileExit(IndexCollision, TILE_CRAFT_ZONE))
 	{
-		GS()->Chat(ClientID, "You left the active zone, menu is restored!");
+		// GS()->Chat(ClientID, "You left the active zone, menu is restored!");
 		GS()->UpdateVotes(ClientID, pPlayer->m_OpenVoteMenu);
 		return true;
 	}

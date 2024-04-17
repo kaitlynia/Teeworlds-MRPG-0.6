@@ -19,14 +19,14 @@ bool CAuctionManager::OnHandleTile(CCharacter* pChr, int IndexCollision)
 	const int ClientID = pPlayer->GetCID();
 	if (pChr->GetHelper()->TileEnter(IndexCollision, TILE_AUCTION))
 	{
-		GS()->Chat(ClientID, "You can see menu in the votes!");
+		GS()->Chat(ClientID, "You can see auction menu in the votes!");
 		GS()->UpdateVotes(ClientID, pPlayer->m_OpenVoteMenu);
 		return true;
 	}
 
 	if (pChr->GetHelper()->TileExit(IndexCollision, TILE_AUCTION))
 	{
-		GS()->Chat(ClientID, "You left the active zone, menu is restored!");
+		// GS()->Chat(ClientID, "You left the active zone, menu is restored!");
 		GS()->UpdateVotes(ClientID, pPlayer->m_OpenVoteMenu);
 		return true;
 	}
@@ -132,7 +132,7 @@ bool CAuctionManager::OnHandleVoteCommands(CPlayer* pPlayer, const char* CMD, co
 		int AvailableValue = Job()->Item()->GetUnfrozenItemValue(pPlayer, VoteID);
 		if(AvailableValue <= 0)
 			return true;
-		
+
 		CAuctionSlot* pAuctionData = &pPlayer->GetTempData().m_AuctionData;
 		pAuctionData->SetItem({ VoteID, 0, pPlayer->GetItem(VoteID)->GetEnchant(), 0, 0});
 		GS()->UpdateVotes(ClientID, MenuList::MENU_AUCTION_CREATE_SLOT);

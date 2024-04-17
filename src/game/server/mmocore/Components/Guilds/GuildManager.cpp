@@ -97,13 +97,13 @@ bool CGuildManager::OnHandleTile(CCharacter* pChr, int IndexCollision)
 
 	if(pChr->GetHelper()->TileEnter(IndexCollision, TILE_GUILD_HOUSE))
 	{
-		GS()->Chat(ClientID, "You can see menu in the votes!");
+		GS()->Chat(ClientID, "You can see guild menu in the votes!");
 		GS()->UpdateVotes(ClientID, MENU_MAIN);
 		return true;
 	}
 	if(pChr->GetHelper()->TileExit(IndexCollision, TILE_GUILD_HOUSE))
 	{
-		GS()->Chat(ClientID, "You left the active zone, menu is restored!");
+		// GS()->Chat(ClientID, "You left the active zone, menu is restored!");
 		GS()->UpdateVotes(ClientID, MENU_MAIN);
 		return true;
 	}
@@ -524,7 +524,7 @@ bool CGuildManager::OnHandleVoteCommands(CPlayer* pPlayer, const char* CMD, int 
 		SendInviteGuild(VoteID, pPlayer);
 		return true;
 	}
-	
+
 	return false;
 }
 

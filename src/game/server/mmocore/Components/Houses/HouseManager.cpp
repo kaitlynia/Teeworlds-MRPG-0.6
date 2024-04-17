@@ -28,7 +28,7 @@ void CHouseManager::OnInitWorld(const char* pWhereLocalWorld)
 
 			CHouseData::CreateElement(ID)->Init(AccountID, ClassName, Price, Bank, Pos, DoorPos, PlantPos, PlantItemID, WorldID, AccessData);
 		}
-		
+
 		Job()->ShowLoadingProgress("Houses", CHouseData::Data().size());
 	});
 }
@@ -40,13 +40,13 @@ bool CHouseManager::OnHandleTile(CCharacter* pChr, int IndexCollision)
 
 	if(pChr->GetHelper()->TileEnter(IndexCollision, TILE_PLAYER_HOUSE))
 	{
-		GS()->Chat(ClientID, "You can see menu in the votes!");
+		GS()->Chat(ClientID, "You can see house menu in the votes!");
 		GS()->UpdateVotes(ClientID, pPlayer->m_OpenVoteMenu);
 		return true;
 	}
 	if(pChr->GetHelper()->TileExit(IndexCollision, TILE_PLAYER_HOUSE))
 	{
-		GS()->Chat(ClientID, "You left the active zone, menu is restored!");
+		// GS()->Chat(ClientID, "You left the active zone, menu is restored!");
 		GS()->UpdateVotes(ClientID, pPlayer->m_OpenVoteMenu);
 		return true;
 	}
@@ -253,7 +253,7 @@ bool CHouseManager::OnHandleVoteCommands(CPlayer* pPlayer, const char* CMD, cons
 		{
 			return true;
 		}
-		
+
 		// check player house
 		CHouseData* pHouse = pPlayer->Acc().GetHouse();
 		if(!pHouse)
@@ -308,7 +308,7 @@ bool CHouseManager::OnHandleVoteCommands(CPlayer* pPlayer, const char* CMD, cons
 			return true;
 		}
 
-		// minial 
+		// minial
 		if(Get < 100)
 		{
 			GS()->Chat(ClientID, "The minimum interaction cannot be below 100 gold!");
@@ -331,7 +331,7 @@ bool CHouseManager::OnHandleVoteCommands(CPlayer* pPlayer, const char* CMD, cons
 			return true;
 		}
 
-		// minial 
+		// minial
 		if(Get < 100)
 		{
 			GS()->Chat(ClientID, "The minimum interaction cannot be below 100 gold!");
